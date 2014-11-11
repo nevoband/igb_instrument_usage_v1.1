@@ -23,6 +23,10 @@ class Rate
 
     }
 
+    /**Create a rate profile by giving it a rate name and rate type. Types may include continuous or monthly
+     * @param $rateName
+     * @param $rateTypeId
+     */
     public function CreateRate($rateName,$rateTypeId)
     {
         $queryAddRate = "INSERT INTO rates (rate_name)VALUES(:rate_name)";
@@ -46,6 +50,9 @@ class Rate
         $this->rateTypeId = $rateTypeId;
     }
 
+    /**Load a rate by id form database into this object
+     * @param $rateId
+     */
     public function LoadRate($rateId)
     {
         $queryLoadRate = "SELECT rate_name, rateytpeid FROM rates WHERE id=:rate_id";
@@ -60,6 +67,9 @@ class Rate
         }
     }
 
+    /**
+     * Update rate rows in database with tihs object's values
+     */
     public function UpdateRate()
     {
         $queryUpdateRate = "UPDATE rates SET rate_name=:rate_name, rate_type_id=:rate_type_id";
@@ -67,6 +77,9 @@ class Rate
         $updateRatePrep->execute(array(":rate_name"=>$this->rateName,":rate_type_id"=>$this->rateTypeId));
     }
 
+    /**Get a list of rate types continuous, monthly etc...
+     * @return array
+     */
     public function GetRateTypes()
     {
         $queryRateTypes = "SELECT rate_type_name, id FROM rate_types";
@@ -74,6 +87,9 @@ class Rate
         return $rateTypes->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * @return array
+     */
     public function GetRates()
     {
         $queryRatesList = "SELECT rate_name, id FROM rates";

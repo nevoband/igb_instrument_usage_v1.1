@@ -24,6 +24,10 @@ class Department {
 
     }
 
+    /** Add a new department
+     * @param $departmentName
+     * @param $description
+     */
     public function AddDepartment($departmentName, $description)
     {
         $queryAddDepartment= "INSERT INTO departments (department_name, description)VALUES(:department_name,:description)";
@@ -36,6 +40,9 @@ class Department {
 
     }
 
+    /**
+     * Update department row in database with changes made to this object
+     */
     public function UpdateDepartment()
     {
         $queryUpdateDepartment = "UPDATE departments SET
@@ -44,6 +51,10 @@ class Department {
                                 WHERE id=".$this->departmentId;
         $this->sqlDatabase->exec($queryUpdateDepartment);
     }
+
+    /** Load department by id from database into this object
+     * @param $id
+     */
     public function LoadDepartment($id)
     {
         $queryDepartmentById = "SELECT department_name,id,department_code FROM departments WHERE id=:id";
@@ -55,6 +66,9 @@ class Department {
         $this->departmentId = $departmentInfoArr["id"];
     }
 
+    /** Get a list of available departments
+     * @return array
+     */
     public function GetDepartmentList()
     {
         $queryDepartmentList= "SELECT department_name,id FROM departments ORDER BY department_name";
@@ -62,6 +76,10 @@ class Department {
         return $departmentInfo->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /** Check if a department name already exists in the database
+     * @param $departmentName
+     * @return bool
+     */
     public function Exists($departmentName)
     {
         $queryDepartment= "SELECT COUNT(*) FROM departments WHERE department_name=:department_name";
@@ -76,6 +94,9 @@ class Department {
         return false;
     }
 
+    /**Get all members of this department
+     * @return array
+     */
     public function GetMembers()
     {
         if($this->getDepartmentId())

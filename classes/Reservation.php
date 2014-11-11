@@ -158,6 +158,13 @@ class Reservation
         return json_encode($eventsArr);
     }
 
+    /** Get a range of events for the calendar for a certain user idor
+     * @param $start
+     * @param $end
+     * @param $userId
+     * @param $deviceId
+     * @return array
+     */
     private function EventsRange($start, $end,$userId,$deviceId)
     {
         $queryEvents = "SELECT e.id, d.device_name, d.full_device_name, e.device_id, u.user_name, u.first, u.last, u.email, e.user_id, e.description, e.start AS starttime, e.stop AS stoptime, e.training
