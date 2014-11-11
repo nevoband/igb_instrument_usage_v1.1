@@ -1,0 +1,19 @@
+<?php
+error_reporting ( E_ALL );
+ini_set ( 'display_errors', '1' );
+
+//Intiialize common stuff
+include ('includes/initializer.php');
+
+//Load User information
+$user = new User ( $sqlDataBase );
+$user->LoadUser ( $_POST ['user_id']);
+
+//Verify the userId is who he really is checking keys
+if ($user->GetSecureKey () == $_POST ['key'])
+{
+    $reservation = new Reservation($sqlDataBase);
+	echo $reservation->JsonEventsRange ( $_POST['start'], $_POST['end'], $_POST ['user_id'], $_POST ['device_id'] );
+}
+exit ();
+?>
