@@ -10,10 +10,10 @@
 @define ('LDAP_PORT','636');
 
 //MySQL settings
-@define ('DB_USER','biotech_user');
-@define ('DB_PASSWORD','igb123');
+@define ('DB_USER','flowcyt_user');
+@define ('DB_PASSWORD','Dlr%8679');
 @define ('DB_HOST','localhost');
-@define ('DB_NAME','biotech_instru');
+@define ('DB_NAME','coreapp_flowcyt');
 
 //Page Settings
 @define ('PAGE_TITLE', 'Instrument Tracking');
