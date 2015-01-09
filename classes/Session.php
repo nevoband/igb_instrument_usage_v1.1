@@ -97,7 +97,7 @@ class Session
 		$this->cfopId=$cfop;
 		
 		$queryInsertSession="INSERT INTO session (user_id,start,stop,status,device_id,description,elapsed,cfop_id)
-		                        VALUES(:user_id,:start,:stop,:status,device_id,:description,TIMESTAMPDIFF(MINUTE,:start,:stop),:cfop_id";
+		                        VALUES(:user_id,:start,:stop,:status,device_id,:description,TIMESTAMPDIFF(MINUTE,:start,:stop),:cfop_id)";
 
 		$insertSessionInfo = $this->sqlDataBase->prepare($queryInsertSession);
         $insertSessionInfo->execute(array(':user_id'=>$this->userId,':start'=>$this->start,':stop'=>$this->stop,':status'=>$this->status,':device_id'=>$this->deviceId,':description'=>$this->description,':cfop_id'=>$this->cfopId));

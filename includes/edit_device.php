@@ -106,7 +106,7 @@ if (isset($_POST['CreateNewDevice'])) {
 
                     <div class="col-sm-9">
                         <input type="text" name="auth_key" value="<?php echo $device->GetDeviceToken(); ?>"
-                               class="form-control" disabled>
+                               class="form-control" readonly>
                     </div>
                 </div>
                 <div class="form-group">
