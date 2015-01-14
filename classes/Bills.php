@@ -47,9 +47,9 @@ class Bills
     public function GetMonthCharges($year, $month, $rateType)
     {
         $pdoParameters = array();
-        $querySelectClauseMonthUsage = "SELECT s.id, uc.cfop,s.cfop_id, s.rate, s.user_id, s.device_id,  d.full_device_name, u.user_name, s.start, s.stop,  u.first, u.last, s.description,r.rate_name, dr.min_use_time  ";
-        $queryTablesClauseMonthUsage = " FROM device_rate dr, device d, users u, rates r, session s LEFT JOIN user_cfop uc ON uc.id=s.cfop_id";
-        $queryWhereClauseMonthUsage =" WHERE d.id = s.device_id AND dr.device_id = d.id AND dr.rate_id = u.rate_id AND u.id=s.user_id AND r.id=u.rate_id AND MONTH(start)=:month AND YEAR(start)=:year AND dr.rate_type_id=:rate_type_id";
+        $querySelectClauseMonthUsage = "SELECT s.id, uc.cfop,s.cfop_id, s.rate, s.user_id, s.device_id,  d.full_device_name, u.user_name, s.start, s.stop,CONCAT(u.first, ', ', u.last) as full_name, s.description,r.rate_name, dr.min_use_time, g.group_name  ";
+        $queryTablesClauseMonthUsage = " FROM device_rate dr, device d, users u, rates r, groups g,session s LEFT JOIN user_cfop uc ON uc.id=s.cfop_id";
+        $queryWhereClauseMonthUsage =" WHERE d.id = s.device_id AND dr.device_id = d.id AND g.id=u.group_id AND dr.rate_id = u.rate_id AND u.id=s.user_id AND r.id=u.rate_id AND MONTH(start)=:month AND YEAR(start)=:year AND dr.rate_type_id=:rate_type_id";
         $pdoParameters[':year'] = $year;
         $pdoParameters[':month'] = $month;
         $pdoParameters[':rate_type_id'] = $rateType;

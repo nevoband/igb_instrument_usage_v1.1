@@ -139,7 +139,7 @@ class VisualizeData
                 } );\n
 
             </script>";
-        $tableString .= "<table id=\"".$tableNameId."\" class=\"display\">";
+        $tableString .= "<table id=\"".$tableNameId."\" class=\"display compact\">";
         $tableString .= "<thead><tr>";
         foreach($tableHeaders as $header)
         {

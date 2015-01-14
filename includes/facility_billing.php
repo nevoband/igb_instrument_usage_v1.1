@@ -161,6 +161,7 @@ if ($sessionIdSelected > 0) {
                 $totalString =  "$" . round($bills->CalcTotal($monthSession['elapsed'], $rateTypeId, $rate, $monthSession['min_use_time']), 2);
                 $monthlyUsage[$rowId]['total'] =  "$" . round($bills->CalcTotal($monthSession['elapsed'], $rateTypeId, $rate, $monthSession['min_use_time']), 2);
 
+                //Full name
                 //Cfop string
                 $cfopString = UserCfop::formatCfop($monthSession['cfop']);
                 $monthlyUsage[$rowId]['cfop']= $cfopString;
@@ -237,8 +238,8 @@ if ($sessionIdSelected > 0) {
 
             echo "<div class=\"row-fluid\">";
             echo VisualizeData::ListSessionsTable($monthlyUsage,
-                array('id','Name','Date','CFOP','Instrument','Hours','Min. Hours','Rate per Hours','Rate Type','Total','options'),
-                array('id','user_name','start','cfop','full_device_name','elapsed','min_use_time','rate','rate_name','total','options'),$rateTypeName."_table",$rowSelected);
+                array('id','NetId','Name','Date','CFOP','Instrument','Hours','Min. Hours','Rate per Hours','Rate Type','Total','Group','options'),
+                array('id','user_name','full_name','start','cfop','full_device_name','elapsed','min_use_time','rate','rate_name','total','group_name','options'),$rateTypeName."_table",$rowSelected);
 
             echo "</div></div></div>";
         }
