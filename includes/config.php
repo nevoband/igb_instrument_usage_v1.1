@@ -22,17 +22,18 @@
 
 //User Defaults
 @define ('DEFAULT_USER_ROLE_ID',3); //No Role
-@define ('DEFAULT_USER_RATE_ID',0);
-@define ('DEFAULT_USER_STATUS_ID',7); //Disabled does not allow user to log in
+@define ('DEFAULT_USER_RATE_ID',9);
+@define ('DEFAULT_USER_STATUS_ID',5); //Disabled does not allow user to log in
 @define ('DEFAULT_USER_GROUP_ID',0); //No Group
 @define ('DEFAULT_USER_DEPARTMENT_ID',0); //No department
 @define ('DEFAULT_USER_EMAIL_DOMAIN','illinois.edu');
 
 //Admin Default
-@define ('ADMIN_EMAIL','nevoband@igb.illinois.edu');
+@define ('ADMIN_EMAIL','akouris@igb.illinois.edu');
+$ADMIN_EMAIL = array('akouris@illinois.edu','nevoband@illinois.edu','pilas@illinois.edu','moller3@illinois.edu');
 
 //Session Tracker users to ignore
-$USER_EXCEPTIONS_ARRAY = array('system','administrator','cnrg');
+$USER_EXCEPTIONS_ARRAY = array('system','administrator','cnrg','local service');
 
 
 ?>

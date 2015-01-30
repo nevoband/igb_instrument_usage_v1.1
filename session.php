@@ -1,7 +1,7 @@
 <?php
 
 //Check if the proper get inputs are set
-error_log("session attempt",0);
+//error_log("session attempt",0);
 if (isset($_POST['username']) && isset($_POST['key'])) {
     include('includes/initializer.php');
     $deviceInfo = new Device($sqlDataBase);
@@ -15,20 +15,21 @@ if (isset($_POST['username']) && isset($_POST['key'])) {
 
         //check if user_name exists
         if ($userId) {
-
             //Start tracking session
             $sessionInfo->TrackSession($deviceInfo->GetDeviceId(), $userId);
         } else {
             //User was not found in website database so check for user exceptions
             if (!in_array(strtolower($_POST['username']), array_map('strtolower', $USER_EXCEPTIONS_ARRAY))) {
                 //Email admin that a new user was detected on instrument and that a new account was created on the website for them
-                error_log('creating user from session', 0);
+                //error_log('creating user from session', 0);
                 $mail = new Mailer();
                 $mail->setFrom(PAGE_TITLE, ADMIN_EMAIL);
-                $mail->addRecipient('Admin', ADMIN_EMAIL);
+                foreach ($ADMIN_EMAIL as $adminMail) {
+                    $mail->addRecipient('Admin', $adminMail);
+                }
                 $mail->fillSubject("Unregistered user: " . $_POST['username'] . " on " . $deviceInfo->GetFullName());
-                $mail->fillMessage("The user " . $_POST['username'] . " has logged into " . $deviceInfo->getShortName() . " does not have a registered account on " . PAGE_TITLE."."
-                    . "\nCreating a new account on system.");
+                $mail->fillMessage($_POST['username'] . " has logged into " . $deviceInfo->getShortName() . ", the user does not have a registered account on " . PAGE_TITLE . "."
+                    . "\nCreating a new account on instrument tracking software.");
                 $mail->send();
 
                 //Create a user account so we have a record
@@ -42,6 +43,7 @@ if (isset($_POST['username']) && isset($_POST['key'])) {
             }
             $deviceInfo->UpdateLastTick();
         }
+
     }
 
     include('includes/mysql_close.php');

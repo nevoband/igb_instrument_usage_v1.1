@@ -92,9 +92,10 @@ class UserCfop{
         $defaultCfop = $this->sqlDataBase->prepare($queryDefaultCfop);
         $defaultCfop->execute(array(':user_id'=>$userId));
         $defaultCfopArr = $defaultCfop->fetch(PDO::FETCH_ASSOC);
-        $userCfopId = $defaultCfopArr['id'];
-        if($userCfopId)
+
+        if($defaultCfop->rowCount() > 0)
         {
+            $userCfopId = $defaultCfopArr['id'];
             return $userCfopId;
         }
         else{

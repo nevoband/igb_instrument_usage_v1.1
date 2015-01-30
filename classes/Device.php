@@ -66,7 +66,7 @@ class Device
      */
     public function LoadDevice($id,$authKey=0)
 	{
-		$queryDeviceInfo = "SELECT * FROM device WHERE id=:id OR (device_token=:device_token AND device_token!=0)";
+		$queryDeviceInfo = "SELECT * FROM device WHERE id=:id OR (device_token=:device_token AND device_token!=\"0\")";
         $deviceInfoPrep = $this->sqlDataBase->prepare($queryDeviceInfo);
 		$deviceInfoPrep->execute(array(':id'=>$id,':device_token'=>$authKey));
         $deviceInfoArr = $deviceInfoPrep->fetch(PDO::FETCH_ASSOC);

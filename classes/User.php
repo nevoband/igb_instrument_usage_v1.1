@@ -155,19 +155,14 @@ class User
      */
     public function Exists($username)
 	{
-		$queryUserName = "SELECT COUNT(*) AS count  FROM users WHERE user_name = :user_name";
+		$queryUserName = "SELECT id FROM users WHERE user_name = :user_name";
 		$userName = $this->sqlDataBase->prepare($queryUserName);
         $userName->execute(array(":user_name"=>$username));
         $userNameArr = $userName->fetch(PDO::FETCH_ASSOC);
 
-		if($userNameArr["count"] > 0)
+		if($userName->rowCount() > 0)
 		{
-            $queryUserID = "SELECT id FROM users WHERE user_name = :user_name";
-            $userId = $this->sqlDataBase->prepare($queryUserID);
-            $userId->execute(array(":user_name"=>$username));
-            $userIdArr = $userId->fetch(PDO::FETCH_ASSOC);
-            return $userIdArr["id"];
-
+            return $userNameArr["id"];
 		}
 		else
 		{
@@ -206,7 +201,11 @@ class User
 
     public function GetAllUsersFullInfo()
     {
-        $queryAllUserInfo = "SELECT * FROM users u, groups g, departments d WHERE g.id=u.group_id AND d.id=u.department_id";
+        $queryAllUserInfo = "SELECT u.first, u.last, u.email, u.department_id, u.group_id, g.group_name, uc.cfop, d.department_name, CONCAT(u.first, ', ', u.last) as full_name
+								FROM users u
+									LEFT JOIN user_cfop uc ON (uc.user_id = u.id AND uc.default_cfop=1)
+									LEFT JOIN groups g ON (g.id=u.group_id)
+									LEFT JOIN departments d ON (d.id=u.department_id)";
         $allUserInfo = $this->sqlDataBase->prepare($queryAllUserInfo);
         $allUserInfo->execute();
         $allUserInfoArr = $allUserInfo->fetchAll(PDO::FETCH_ASSOC);

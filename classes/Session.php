@@ -47,18 +47,20 @@ class Session
 			$openSession = $this->sqlDataBase->prepare($queryOpenSession);
             $openSession->execute(array(':device_id'=>$deviceId,':user_id'=>$userId));
             $openSessionArr = $openSession->fetch(PDO::FETCH_ASSOC);
-			
+
+
 			if($openSessionArr)
 			{
+				error_log("Open session detected updating".$userId,0);
 				$queryUpdateSession = "UPDATE session SET stop=NOW(), elapsed=TIMESTAMPDIFF(MINUTE,start,NOW()) WHERE id =:id";
                 $updateSession = $this->sqlDataBase->prepare($queryUpdateSession);
                 $updateSession->execute(array(':id'=>$openSessionArr['id']));
 			}
 			else
 			{
+				error_log("no open sessions detected opening session ".$userId,0);
                 $userCfop = new UserCfop($this->sqlDataBase);
                 $defaultCfopId = $userCfop->LoadDefaultCfopl($userId);
-                echo $defaultCfopId;
 				$queryStartSession = "INSERT INTO session (user_id,device_id,start,stop,rate,rate_type_id,min_use_time,cfop_id)
 				                        SELECT
 				                          :user_id,
@@ -68,6 +70,7 @@ class Session
 				                          WHERE device_id=:device_id
 				                          AND rate_id=(SELECT rate_id FROM users
 				                          WHERE id=:user_id LIMIT 1)";
+				 error_log($userId." ".$deviceId." ".$defaultCfopId,0);
 				 $startSession = $this->sqlDataBase->prepare($queryStartSession);
                  $startSession->execute(array(':user_id'=>$userId,':device_id'=>$deviceId,':default_cfop_id'=>$defaultCfopId));
                  $sessionId = $this->sqlDataBase->lastInsertId();

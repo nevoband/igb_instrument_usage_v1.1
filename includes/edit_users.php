@@ -300,18 +300,28 @@ if ($accessControl->GetPermissionLevel($authenticate->getAuthenticatedUser()->Ge
 </div>
 
 </div>
-<div class="row-fluid">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h4>User Directory</h4>
-            </div>
-            <div class="body">
-                <?php
-                $usersFullInfoList = $selectedUser->GetAllUsersFullInfo();
-                echo VisualizeData::ListSessionsTable($usersFullInfoList, array('First Name', 'Last Name', 'E-Mail', 'Group', 'Department'), array('first', 'last', 'email', 'group_name', 'department_name'), 'usersTable');
+<?php
 
-                ?>
+//Only show the user table to administrators
+if ($accessControl->GetPermissionLevel($authenticate->getAuthenticatedUser()->GetUserId(), AccessControl::RESOURCE_PAGE, $pages->GetPageId('Edit Users')) == AccessControl::PERM_ADMIN) {
+    ?>
+    <div class="row-fluid">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>User Directory</h4>
+                </div>
+                <div class="body">
+                    <?php
+                    $usersFullInfoList = $selectedUser->GetAllUsersFullInfo();
+                    echo VisualizeData::ListSessionsTable($usersFullInfoList,
+                        array('Name', 'E-Mail', 'CFOP', 'Group', 'Department'),
+                        array('full_name', 'email', 'cfop', 'group_name', 'department_name'), 'usersTable');
+                    ?>
+                </div>
             </div>
         </div>
     </div>
+<?php
+}
+?>
