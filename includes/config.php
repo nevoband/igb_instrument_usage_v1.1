@@ -33,7 +33,7 @@
 $ADMIN_EMAIL = array('akouris@illinois.edu','nevoband@illinois.edu','pilas@illinois.edu','moller3@illinois.edu');
 
 //Session Tracker users to ignore
-$USER_EXCEPTIONS_ARRAY = array('system','administrator','cnrg','local service');
+$USER_EXCEPTIONS_ARRAY = array('system','administrator','cnrg','local service','BDFSE','Accuri','Admin');
 
 
 ?>

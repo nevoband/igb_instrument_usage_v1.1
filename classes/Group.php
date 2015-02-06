@@ -58,7 +58,7 @@ class Group
         $queryUpdateGroup = "UPDATE groups SET
                                 group_name=:group_name,
                                 description=:description,
-                                department_id=:department_id,
+                                department_id=:department_id
                                 WHERE id=:group_id";
 
         $updateGroup = $this->sqlDataBase->prepare($queryUpdateGroup);

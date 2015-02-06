@@ -316,7 +316,7 @@ if ($accessControl->GetPermissionLevel($authenticate->getAuthenticatedUser()->Ge
                     $usersFullInfoList = $selectedUser->GetAllUsersFullInfo();
                     echo VisualizeData::ListSessionsTable($usersFullInfoList,
                         array('Name', 'E-Mail', 'CFOP', 'Group', 'Department'),
-                        array('full_name', 'email', 'cfop', 'group_name', 'department_name'), 'usersTable');
+                        array('full_name', 'email', 'cfop', 'group_name', 'department_name'), 'usersTable',0);
                     ?>
                 </div>
             </div>

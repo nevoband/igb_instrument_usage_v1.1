@@ -164,7 +164,7 @@ if (isset($_POST['filtersSelection'])) {
     </div>";
         $sessionArr = $session->GetSessionsUsage($startDate, $endDate, Session::ALL_SESSIONS, $filtersArr);
         //List session data in a table
-        echo VisualizeData::ListSessionsTable($sessionArr, array('User Name', 'Device', 'Group', 'Start', 'Elapsed (Hrs)', 'Billed ($)'), array('user_name', 'device_name', 'group_name', 'start', 'elapsed', 'bill'), 'sessionData');
+        echo VisualizeData::ListSessionsTable($sessionArr, array('User Name', 'Device', 'Group', 'Start', 'Elapsed (Hrs)', 'Billed ($)'), array('user_name', 'device_name', 'group_name', 'start', 'elapsed', 'bill'), 'sessionData',0);
     }
 
     ?>

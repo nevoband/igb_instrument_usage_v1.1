@@ -1,18 +1,3 @@
-<script>
-    function CheckAll() {
-        count = document.verifyForm.elements.length;
-        for (i = 0; i < count; i++) {
-            if (document.verifyForm.elements[i].checked == 1) {
-                document.verifyForm.elements[i].checked = 0;
-            }
-            else {
-                document.verifyForm.elements[i].checked = 1;
-            }
-        }
-    }
-
-</script>
-
 <?php
 //Declare objects
 $rateTypesList = array(Bills::CONTINUOUS_RATE => "Continuous", Bills::MONTHLY_RATE => "Monthly");
@@ -26,7 +11,6 @@ $userCfop = new UserCfop($sqlDataBase);
 
 $sessionIdSelected = 0;
 $rowSelected = 0;
-
 
 if (isset($_POST['createSession'])) {
     $startTimeStamp = strtotime($_POST['startDate'] . " " . $_POST['starttime']);
@@ -54,13 +38,26 @@ if (isset($_POST['update_session'])) {
     $sessionIdSelected = $_POST['edit_session_id'];
 }
 
-if (isset($_GET['session_id'])) {
-    if(isset($_GET['rowid']))
+if (isset($_POST['applyAction'])) {
+
+    foreach($rateTypesList as $id=>$rate)
     {
+        if(isset($_POST['sessionsCheckbox'])) {
+
+            switch ($_POST["selectAction"]) {
+                case "defaultCfop":
+                    $bills->SetToDefaultCFOP($_POST['sessionsCheckbox']);
+                    break;
+            }
+        }
+    }
+}
+
+if (isset($_GET['session_id'])) {
+    if (isset($_GET['rowid'])) {
         $rowSelected = $_GET['rowid'];
     }
-    if(isset($_POST['edit_session_row']))
-    {
+    if (isset($_POST['edit_session_row'])) {
         $rowSelected = $_POST['edit_session_row'];
     }
     $sessionIdSelected = $_GET['session_id'];
@@ -68,10 +65,20 @@ if (isset($_GET['session_id'])) {
 
 if (isset($_POST['monthSelected'])) {
     list($month, $year) = explode(" ", $_POST['monthSelected']);
-} else {
+}
+else {
 
     $month = Date("n");
     $year = Date("Y");
+}
+
+if(isset($_POST['rateTypeSelected']))
+{
+    $rateTypeSelected = $_POST['rateTypeSelected'];
+}
+else
+{
+    $rateTypeSelected = Bills::CONTINUOUS_RATE;
 }
 
 if ($sessionIdSelected > 0) {
@@ -101,149 +108,173 @@ if ($sessionIdSelected > 0) {
         cycle or per minute usage.</p>
 </div>
 
-    <form name="verifyForm" method="post"
-          action="./index.php?view=<?php echo $pages->GetPageId('Facility Billing'); ?>">
-        <div class="well row-fluid">
-            <div class="col-sm-3">
-        <select name="monthSelected" class="form-control">
-            <?php
-            $availableMonths = $bills->GetAvailableBillingMonths();
+<form name="verifyForm" method="post"
+      action="./index.php?view=<?php echo $pages->GetPageId('Facility Billing'); ?>">
+    <div class="well row-fluid">
+        <div class="col-sm-3">
+            <select name="monthSelected" class="form-control">
+                <?php
+                $availableMonths = $bills->GetAvailableBillingMonths();
 
-            foreach ($availableMonths as $id => $availMonth) {
-                echo "<option value=\"" . $availMonth['month'] . " " . $availMonth['year'] . "\"";
-                if ($availMonth['month'] == $month && $availMonth['year'] == $year) {
-                    echo " SELECTED";
+                foreach ($availableMonths as $id => $availMonth) {
+                    echo "<option value=\"" . $availMonth['month'] . " " . $availMonth['year'] . "\"";
+                    if ($availMonth['month'] == $month && $availMonth['year'] == $year) {
+                        echo " SELECTED";
+                    }
+                    echo ">" . $availMonth['mon_yr'] . "</option>";
                 }
-                echo ">" . $availMonth['mon_yr'] . "</option>";
-            }
 
-            ?>
-        </select>
-            </div>
-            <div class="col-sm-8">
-                <input class="btn btn-primary btn-sm" type="submit"
-                       name="selectMonth" value="Select Billing Period">
-            </div>
-            </div>
-        <?php
-        foreach ($rateTypesList as $rateTypeId => $rateTypeName) {
-            $bills->setGroupBy(0);
+                ?>
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <select name="rateTypeSelected" class="form-control">
+                <?php
 
-            if ($rateTypeId == Bills::MONTHLY_RATE) {
-                $bills->setGroupBy(Bills::GROUP_DEVICE);
-            }
+                foreach ($rateTypesList as $rateTypeId => $rateTypeName) {
+                    echo "<option value=\"" . $rateTypeId . "\" ";
+                    if ($rateTypeSelected == $rateTypeId) {
+                        echo " SELECTED";
+                    }
+                    echo ">" . $rateTypeName . "</option>";
+                }
 
-            $monthlyUsage = $bills->GetMonthCharges($year, $month, $rateTypeId);
+                ?>
+            </select>
+        </div>
+        <div class="col-sm-6">
+            <input class="btn btn-primary btn-sm" type="submit"
+                   name="selectMonth" value="Select Billing Period">
+        </div>
+    </div>
+    <?php
 
-            echo "<div class=\"panel panel-default\">
+        $bills->setGroupBy(0);
+
+        if ($rateTypeSelected== Bills::MONTHLY_RATE) {
+            $bills->setGroupBy(Bills::GROUP_DEVICE);
+        }
+
+        $monthlyUsage = $bills->GetMonthCharges($year, $month, $rateTypeSelected);
+
+        echo "<div class=\"panel panel-default\">
                     <div class=\"panel-heading\">
-                        <h3>Billed " . $rateTypeName . ":</h3>
+                        <h3>Billed " . $rateTypesList[$rateTypeSelected] . ":</h3>
                     </div>
                     <div class=\"panel-body\">";
 
-            //Go through each month session
-            foreach ($monthlyUsage as $rowId => $monthSession) {
-                $rate = $monthSession['rate'];
+        //Go through each month session
+        foreach ($monthlyUsage as $rowId => $monthSession) {
+            $rate = $monthSession['rate'];
 
-                //change rate to hours
-                $monthlyUsage[$rowId]['rate'] = round($monthSession['rate']*60,2);
+            //change rate to hours
+            $monthlyUsage[$rowId]['rate'] = round($monthSession['rate'] * 60, 2);
 
-                //Change usage to hours
-                $monthlyUsage[$rowId]['elapsed'] = round($monthSession['elapsed']/60,2);
+            //Change usage to hours
+            $monthlyUsage[$rowId]['elapsed'] = round($monthSession['elapsed'] / 60, 2);
 
-                //Minimum usage time
-                $monthlyUsage[$rowId]['min_use_time'] = round(($monthSession['min_use_time'] / 60), 2);
+            //Minimum usage time
+            $monthlyUsage[$rowId]['min_use_time'] = round(($monthSession['min_use_time'] / 60), 2);
 
-                //Show Edit under Options
-                $monthlyUsage[$rowId]['options'] = "<a id=" . $monthSession['id'] . " href=\"index.php?view=" . $pages->GetPageId('Facility Billing') . "&session_id=" . $monthSession['id'] . "&rowid=".$rowId."\">Edit</a>";
+            //Show Edit under Options
+            $monthlyUsage[$rowId]['options'] = "<a id=" . $monthSession['id'] . " href=\"index.php?view=" . $pages->GetPageId('Facility Billing') . "&session_id=" . $monthSession['id'] . "&rowid=" . $rowId . "\">Edit</a>";
 
-                //Total String
-                $totalString =  "$" . round($bills->CalcTotal($monthSession['elapsed'], $rateTypeId, $rate, $monthSession['min_use_time']), 2);
-                $monthlyUsage[$rowId]['total'] =  "$" . round($bills->CalcTotal($monthSession['elapsed'], $rateTypeId, $rate, $monthSession['min_use_time']), 2);
+            //Total String
+            $totalString = "$" . round($bills->CalcTotal($monthSession['elapsed'], $rateTypeSelected, $rate, $monthSession['min_use_time']), 2);
+            $monthlyUsage[$rowId]['total'] = "$" . round($bills->CalcTotal($monthSession['elapsed'], $rateTypeSelected, $rate, $monthSession['min_use_time']), 2);
 
-                //Full name
-                //Cfop string
-                $cfopString = UserCfop::formatCfop($monthSession['cfop']);
-                $monthlyUsage[$rowId]['cfop']= $cfopString;
+            //Full name
+            //Cfop string
+            $cfopString = UserCfop::formatCfop($monthSession['cfop']);
+            $monthlyUsage[$rowId]['cfop'] = $cfopString;
 
-                //If we want to edit this session info then load selected row with input input fields
-                if ($session->GetSessionId() == $monthSession['id'])
-                {
-                    //User options for edit session
-                    $userNameString =  "<select name=\"user_id\" class=\"form-control\">";
-                    foreach ($userList as $id => $userToSelect) {
-                        $userNameString .="<option value=" . $userToSelect["id"];
-                        if ($userToSelect["id"] == $monthSession['user_id']) {
-                            $userNameString .= " SELECTED";
-                        }
-                        $userNameString .= ">" . $userToSelect['user_name'] . "</option>";
+            //If we want to edit this session info then load selected row with input input fields
+            if ($session->GetSessionId() == $monthSession['id']) {
+                //User options for edit session
+                $userNameString = "<select name=\"user_id\" class=\"form-control\">";
+                foreach ($userList as $id => $userToSelect) {
+                    $userNameString .= "<option value=" . $userToSelect["id"];
+                    if ($userToSelect["id"] == $monthSession['user_id']) {
+                        $userNameString .= " SELECTED";
                     }
-                    $userNameString .= "</select>";
-                    $monthlyUsage[$rowId]['user_name'] = $userNameString;
+                    $userNameString .= ">" . $userToSelect['user_name'] . "</option>";
+                }
+                $userNameString .= "</select>";
+                $monthlyUsage[$rowId]['user_name'] = $userNameString;
 
-                    //Start Time Edit String
-                    $startTimeString = "<input type=\"datetime-local\" name=\"datetime\" value=\"".date('Y-m-d\TH:i:s', strtotime($monthSession['start'])) . "\" class=\"form-control\">";
-                    $monthlyUsage[$rowId]['start']= $startTimeString;
+                //Start Time Edit String
+                $startTimeString = "<input type=\"datetime-local\" name=\"datetime\" value=\"" . date('Y-m-d\TH:i:s', strtotime($monthSession['start'])) . "\" class=\"form-control\">";
+                $monthlyUsage[$rowId]['start'] = $startTimeString;
 
-                    //CFOP options for edit session
-                    $userCfopList = $userCfop->ListCfops($monthSession['user_id']);
-                    $cfopString = "<select name=\"user_cfop_id\" class=\"form-control\">";
-                    foreach ($userCfopList as $userCfopInfo) {
-                        $cfopString .= "<option value=" . $userCfopInfo['id'];
-                        if ($monthSession['cfop_id'] == $userCfopInfo['id']) {
-                            $cfopString .= " SELECTED";
-                        }
-                        $cfopString .= ">" . UserCfop::formatCfop($userCfopInfo['cfop']) . "</option>";
+                //CFOP options for edit session
+                $userCfopList = $userCfop->ListCfops($monthSession['user_id']);
+                $cfopString = "<select name=\"user_cfop_id\" class=\"form-control\">";
+                foreach ($userCfopList as $userCfopInfo) {
+                    $cfopString .= "<option value=" . $userCfopInfo['id'];
+                    if ($monthSession['cfop_id'] == $userCfopInfo['id']) {
+                        $cfopString .= " SELECTED";
                     }
-                    $cfopString .= "</select>";
-                    $monthlyUsage[$rowId]['cfop']= $cfopString;
+                    $cfopString .= ">" . UserCfop::formatCfop($userCfopInfo['cfop']) . "</option>";
+                }
+                $cfopString .= "</select>";
+                $monthlyUsage[$rowId]['cfop'] = $cfopString;
 
-                    //Device selection edit string
-                    $deviceString = "<select name=\"device_id\" class=\"form-control\">";
-                    foreach ($devicesList as $id => $deviceToSelect) {
-                        $deviceString .= "<option value=" . $deviceToSelect["id"];
-                        if ($deviceToSelect["id"] == $monthSession['device_id']) {
-                            $deviceString .= " SELECTED";
-                        }
-                        $deviceString .= ">" . $deviceToSelect["device_name"] . "</option>";
+                //Device selection edit string
+                $deviceString = "<select name=\"device_id\" class=\"form-control\">";
+                foreach ($devicesList as $id => $deviceToSelect) {
+                    $deviceString .= "<option value=" . $deviceToSelect["id"];
+                    if ($deviceToSelect["id"] == $monthSession['device_id']) {
+                        $deviceString .= " SELECTED";
                     }
-                    $deviceString .= "</select>";
-                    $monthlyUsage[$rowId]['full_device_name']= $deviceString;
+                    $deviceString .= ">" . $deviceToSelect["device_name"] . "</option>";
+                }
+                $deviceString .= "</select>";
+                $monthlyUsage[$rowId]['full_device_name'] = $deviceString;
 
-                    //Elapsed time edit string
-                    $elapsedTimeString = "<input type=\"text\" name=\"elapsed\" value=\"" . round(($monthSession['elapsed'] / 60), 2) . "\" class=\"form-control\">";
-                    $monthlyUsage[$rowId]['elapsed']=$elapsedTimeString;
+                //Elapsed time edit string
+                $elapsedTimeString = "<input type=\"text\" name=\"elapsed\" value=\"" . round(($monthSession['elapsed'] / 60), 2) . "\" class=\"form-control\">";
+                $monthlyUsage[$rowId]['elapsed'] = $elapsedTimeString;
 
-                    //Min use time edit string
-                    $minUseTimeString = "<input type=\"text\" name=\"min_use_time\" value=\"".round(($monthSession['min_use_time'] / 60), 2)."\" class=\"form-control\">";
-                    $monthlyUsage[$rowId]['min_use_time'] = $minUseTimeString;
+                //Min use time edit string
+                $minUseTimeString = "<input type=\"text\" name=\"min_use_time\" value=\"" . round(($monthSession['min_use_time'] / 60), 2) . "\" class=\"form-control\">";
+                $monthlyUsage[$rowId]['min_use_time'] = $minUseTimeString;
 
-                    //Rate String
-                    $rateString = "<input type=\"text\" name=\"rate\" value=\"" . round(($rate * 60), 2) . "\" class=\"form-control\">";
-                    $monthlyUsage[$rowId]['rate']=$rateString;
+                //Rate String
+                $rateString = "<input type=\"text\" name=\"rate\" value=\"" . round(($rate * 60), 2) . "\" class=\"form-control\">";
+                $monthlyUsage[$rowId]['rate'] = $rateString;
 
-                    //Description Edit String
-                    $descriptionString = "<textarea name=\"description\" class=\"form-control\">" . $monthSession['description'] . "</textarea>";
-                    $monthlyUsage[$rowId]['description']=$descriptionString;
+                //Description Edit String
+                $descriptionString = "<textarea name=\"description\" class=\"form-control\">" . $monthSession['description'] . "</textarea>";
+                $monthlyUsage[$rowId]['description'] = $descriptionString;
 
-                    //Options
-                    $optionsString =  "<a id=" . $monthSession['id'] . "></a>
+                //Options
+                $optionsString = "<a id=" . $monthSession['id'] . " name=".$monthSession['id']."></a>
                                         <input type=\"submit\" value=\"Update\" name=\"update_session\" class=\"btn btn-primary btn-sm\">
                                         <input type=\"hidden\" name=\"edit_session_id\" value=" . $monthSession['id'] . ">
-                                        <input type=\"hidden\" name=\"edit_session_row\" value=".$rowId.">";
-                    $monthlyUsage[$rowId]['options'] = $optionsString;
-                }
-
+                                        <input type=\"hidden\" name=\"edit_session_row\" value=" . $rowId . ">";
+                $monthlyUsage[$rowId]['options'] = $optionsString;
             }
 
-            echo "<div class=\"row-fluid\">";
-            echo VisualizeData::ListSessionsTable($monthlyUsage,
-                array('id','NetId','Name','Date','CFOP','Instrument','Hours','Min. Hours','Rate per Hours','Rate Type','Total','Group','options'),
-                array('id','user_name','full_name','start','cfop','full_device_name','elapsed','min_use_time','rate','rate_name','total','group_name','options'),$rateTypeName."_table",$rowSelected);
-
-            echo "</div></div></div>";
         }
-        ?>
-        </tbody>
 
-    </form>
+        echo "<div class=\"row-fluid\">";
+        echo VisualizeData::ListSessionsTable($monthlyUsage,
+            array('id', 'NetId', 'Name', 'Date', 'CFOP', 'Inst.', 'Hrs', ' Min. Hrs', '$/h', 'Rate', 'Total', 'Group', 'Opt.'),
+            array('id', 'user_name', 'full_name', 'start', 'cfop', 'full_device_name', 'elapsed', 'min_use_time', 'rate', 'rate_name', 'total', 'group_name', 'options'), "Rate".$rateTypeSelected, $rowSelected, true);
+
+        echo "</div>";
+
+
+        echo "<input class=\"btn btn-primary btn-sm\" type=\"submit\"
+                       name=\"applyAction\" value=\"Apply Action\">
+                    <select name=\"selectAction\">
+                    <option value=\"none\">none</option>
+                    <option value=\"defaultCfop\">Set Default CFOP</option>
+                    </select> on checked items.";
+
+        echo "</div>";
+
+        echo "</div>";
+    ?>
+    </tbody>
+</form>

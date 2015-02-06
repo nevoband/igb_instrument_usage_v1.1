@@ -124,23 +124,32 @@ class VisualizeData
         return $graphString;
     }
 
-    public static function ListSessionsTable($tableData,$tableHeaders,$dataColumns,$tableNameId,$rowSelected=0)
+    public static function ListSessionsTable($tableData,$tableHeaders,$dataColumns,$tableNameId,$rowSelected,$checkBoxes=false)
     {
-        $tableString =  "
-            <script type=\"text/javascript\" class=\"init\">
+        $tableString =  " <script type=\"text/javascript\" class=\"init\">
             $(document).ready( function () {\n
             var ".$tableNameId." = $('#".$tableNameId."').dataTable({
                 \"dom\": 'T<\"clear\">lfrtip',
+                \"paging\": false,
                 \"tableTools\": {
                     \"sSwfPath\": \"swf/copy_csv_xls_pdf.swf\"
                 }
                     });\n
-             ".$tableNameId.".fnDisplayRow( ".$tableNameId.".fnGetNodes()[".$rowSelected."] );
-                } );\n
 
+            $(\"#checkAll\").click(function(){
+            $('input:checkbox').prop('checked', this.checked);
+                });
+                } );\n
             </script>";
         $tableString .= "<table id=\"".$tableNameId."\" class=\"display compact\">";
         $tableString .= "<thead><tr>";
+
+        //If checkboxes are checked then add another column
+        if($checkBoxes)
+        {
+           $tableString .= "<th><input type=\"checkbox\" id=\"checkAll\" title=\"Toggle All Checkboxes\" name=\"checkbox\"></th>";
+        }
+
         foreach($tableHeaders as $header)
         {
             $tableString .= "<th>".$header."</th>";
@@ -151,6 +160,12 @@ class VisualizeData
         foreach($tableData as $id=>$sessionInfo)
         {
             $tableString .= "<tr>";
+
+            if($checkBoxes)
+            {
+                $tableString.= "<td><input type=\"checkbox\" class=\"checkbox\" name=\"sessionsCheckbox[]\" value=\"".$sessionInfo['id']."\"> </td>";
+            }
+
             foreach($dataColumns as $columnName)
             {
                 $tableString.= "<td>".$sessionInfo[$columnName]."</td>";
