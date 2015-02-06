@@ -191,7 +191,7 @@ if ($sessionIdSelected > 0) {
             //If we want to edit this session info then load selected row with input input fields
             if ($session->GetSessionId() == $monthSession['id']) {
                 //User options for edit session
-                $userNameString = "<select name=\"user_id\" class=\"form-control\">";
+                $userNameString = "<select name=\"user_id\" class=\"form-control input-xs\">";
                 foreach ($userList as $id => $userToSelect) {
                     $userNameString .= "<option value=" . $userToSelect["id"];
                     if ($userToSelect["id"] == $monthSession['user_id']) {
@@ -203,12 +203,12 @@ if ($sessionIdSelected > 0) {
                 $monthlyUsage[$rowId]['user_name'] = $userNameString;
 
                 //Start Time Edit String
-                $startTimeString = "<input type=\"datetime-local\" name=\"datetime\" value=\"" . date('Y-m-d\TH:i:s', strtotime($monthSession['start'])) . "\" class=\"form-control\">";
+                $startTimeString = "<input type=\"datetime-local\" name=\"datetime\" value=\"" . date('Y-m-d\TH:i:s', strtotime($monthSession['start'])) . "\" class=\"form-control input-xs\">";
                 $monthlyUsage[$rowId]['start'] = $startTimeString;
 
                 //CFOP options for edit session
                 $userCfopList = $userCfop->ListCfops($monthSession['user_id']);
-                $cfopString = "<select name=\"user_cfop_id\" class=\"form-control\">";
+                $cfopString = "<select name=\"user_cfop_id\" class=\"form-control input-xs\">";
                 foreach ($userCfopList as $userCfopInfo) {
                     $cfopString .= "<option value=" . $userCfopInfo['id'];
                     if ($monthSession['cfop_id'] == $userCfopInfo['id']) {
@@ -220,36 +220,36 @@ if ($sessionIdSelected > 0) {
                 $monthlyUsage[$rowId]['cfop'] = $cfopString;
 
                 //Device selection edit string
-                $deviceString = "<select name=\"device_id\" class=\"form-control\">";
+                $deviceString = "<select name=\"device_id\" class=\"form-control input-xs\">";
                 foreach ($devicesList as $id => $deviceToSelect) {
                     $deviceString .= "<option value=" . $deviceToSelect["id"];
                     if ($deviceToSelect["id"] == $monthSession['device_id']) {
                         $deviceString .= " SELECTED";
                     }
-                    $deviceString .= ">" . $deviceToSelect["device_name"] . "</option>";
+                    $deviceString .= ">" . $deviceToSelect["full_device_name"] . "</option>";
                 }
                 $deviceString .= "</select>";
                 $monthlyUsage[$rowId]['full_device_name'] = $deviceString;
 
                 //Elapsed time edit string
-                $elapsedTimeString = "<input type=\"text\" name=\"elapsed\" value=\"" . round(($monthSession['elapsed'] / 60), 2) . "\" class=\"form-control\">";
+                $elapsedTimeString = "<input type=\"text\" name=\"elapsed\" value=\"" . round(($monthSession['elapsed'] / 60), 2) . "\" class=\"form-control input-xs\">";
                 $monthlyUsage[$rowId]['elapsed'] = $elapsedTimeString;
 
                 //Min use time edit string
-                $minUseTimeString = "<input type=\"text\" name=\"min_use_time\" value=\"" . round(($monthSession['min_use_time'] / 60), 2) . "\" class=\"form-control\">";
+                $minUseTimeString = "<input type=\"text\" name=\"min_use_time\" value=\"" . round(($monthSession['min_use_time'] / 60), 2) . "\" class=\"form-control input-xs\">";
                 $monthlyUsage[$rowId]['min_use_time'] = $minUseTimeString;
 
                 //Rate String
-                $rateString = "<input type=\"text\" name=\"rate\" value=\"" . round(($rate * 60), 2) . "\" class=\"form-control\">";
+                $rateString = "<input type=\"text\" name=\"rate\" value=\"" . round(($rate * 60), 2) . "\" class=\"form-control input-xs\">";
                 $monthlyUsage[$rowId]['rate'] = $rateString;
 
                 //Description Edit String
-                $descriptionString = "<textarea name=\"description\" class=\"form-control\">" . $monthSession['description'] . "</textarea>";
+                $descriptionString = "<textarea name=\"description\" class=\"form-control input-xs\">" . $monthSession['description'] . "</textarea>";
                 $monthlyUsage[$rowId]['description'] = $descriptionString;
 
                 //Options
                 $optionsString = "<a id=" . $monthSession['id'] . " name=".$monthSession['id']."></a>
-                                        <input type=\"submit\" value=\"Update\" name=\"update_session\" class=\"btn btn-primary btn-sm\">
+                                        <input type=\"submit\" value=\"Update\" name=\"update_session\" class=\"btn btn-primary btn-xs\">
                                         <input type=\"hidden\" name=\"edit_session_id\" value=" . $monthSession['id'] . ">
                                         <input type=\"hidden\" name=\"edit_session_row\" value=" . $rowId . ">";
                 $monthlyUsage[$rowId]['options'] = $optionsString;
