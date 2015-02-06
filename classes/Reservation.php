@@ -34,6 +34,15 @@ class Reservation
 
     }
 
+    /**Create a new reservation on the calendar
+     * @param $deviceId
+     * @param $userId
+     * @param $start
+     * @param $stop
+     * @param $description
+     * @param $training
+     * @return int
+     */
     public function CreateReservation($deviceId, $userId, $start, $stop, $description, $training)
     {
         $this->deviceId = $deviceId;
@@ -51,6 +60,9 @@ class Reservation
         }
     }
 
+    /**Save the reservation object to the database
+     * @return int
+     */
     public function SaveReservation()
     {
         error_log('start save reservation',0);
@@ -89,6 +101,9 @@ class Reservation
         }
     }
 
+    /**
+     * Delete the reservation currently loaded
+     */
     public function DeleteReservation()
     {
         $queryDeleteReservation = "DELETE FROM reservation_info WHERE id=:reservation_id";
@@ -96,6 +111,9 @@ class Reservation
         $deleteReservationInfo->execute(array(':reservation_id'=>$this->reservationId));
     }
 
+    /**Update the reservation with the setters changes
+     * @return int
+     */
     public function UpdateReservation()
     {
         //No update feature needed yet
@@ -111,6 +129,14 @@ class Reservation
         }
     }
 
+    /** Check for event conflicts prior to trying to enter a reservation into the database
+     * or updatign a reservation with a new time range
+     * @param $deviceId
+     * @param $startTimeUnix
+     * @param $stopTimeUnix
+     * @param int $reservationId
+     * @return int
+     */
     public function CheckEventConflicts($deviceId, $startTimeUnix, $stopTimeUnix, $reservationId = 0)
     {
         $queryConflicts = "SELECT COUNT(*) AS num_conflicts FROM reservation_info

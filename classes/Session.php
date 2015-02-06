@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Class Session
+ * Used to keep create,delete and update user instrument sessions
+ *
+ */
 class Session
 {
 
@@ -36,8 +42,11 @@ class Session
 		
 	}
 
-	//Session tracker keeps track of session on each device
-	//Used in session.php to track how long a person has been logged in
+	/**Session tracker keeps track of session on each device
+	 * Used in session.php to track how long a person has been logged
+	 * @param $deviceId
+	 * @param $userId
+	 */
 	public function TrackSession($deviceId,$userId)
 	{
 		if($userId>0)
@@ -88,7 +97,16 @@ class Session
             $updateDeviceNonUser->execute(array(':id'=>$deviceId));
 		}
 	}
-	
+
+	/**Create a new session in the database
+	 * @param $userId
+	 * @param $start
+	 * @param $stop
+	 * @param $status
+	 * @param $deviceId
+	 * @param $description
+	 * @param $cfop
+	 */
 	public function CreateSession($userId,$start,$stop,$status,$deviceId,$description,$cfop)
 	{
 		$this->userId=$userId;
@@ -108,6 +126,9 @@ class Session
         $this->sessionId;
 	}
 
+	/**Load a session form the database into this object
+	 * @param $id
+	 */
 	public function LoadSession($id)
 	{
 		$querySessionInfo = "SELECT * FROM session WHERE id=:session_id";
@@ -126,6 +147,9 @@ class Session
 		$this->cfopId=$sessionInfoArr["cfop_id"];
 	}
 
+	/**
+	 * Update the session with variables changed using the Setters
+	 */
 	public function UpdateSession()
 	{
 		$queryUpdateSession = "UPDATE session SET
@@ -153,7 +177,9 @@ class Session
                             ':id'=>$this->sessionId));
 	}
 
-
+	/**
+	 * Delete the currently loaded session
+	 */
 	public function Delete()
 	{
 		$queryDeleteSession = "DELETE FROM session WHERE id=:id";
@@ -161,6 +187,9 @@ class Session
         $deleteSession->execute(array(':id'=>$this->sessionId));
 	}
 
+	/**
+	 * Load the last session form the database into this object
+	 */
     public function LoadLastSession()
     {
         $queryLastSession = "SELECT id FROM sessions ORDER BY start DESC LIMIT 1";
@@ -170,6 +199,9 @@ class Session
         $this->LoadSession($lastSessionIdArr["id"]);
     }
 
+	/**
+	 * Load the first session from the database into this object
+	 */
     public function LoadFirstSession()
     {
         $queryFirstSession = "SELECT id FROM sessions ORDER BY start ASC LIMIT 1";
@@ -179,6 +211,17 @@ class Session
         $this->LoadSession($firstSessionIdArr["id"]);
     }
 
+	/** Get an array of sessions and their time usage
+	 * can use an array to filter the sessions by users device and group
+	 * the filter consists of an associative array with keys 'user', 'device' and 'group'
+	 * consisting of IDs for each group
+	 * Can group by different rows please see switch statement in function
+	 * @param $startDateRange
+	 * @param $endDateRange
+	 * @param $groupBy
+	 * @param $filtersArr
+	 * @return array
+	 */
     public function GetSessionsUsage($startDateRange, $endDateRange, $groupBy, $filtersArr)
     {
         $querySessions = "SELECT u.user_name, g.group_name, s.device_id, d.device_name, s.start, s.stop";
@@ -199,6 +242,7 @@ class Session
                                 AND u.group_id=g.id";
 
         //WHERE FILTERS
+		//Filter based on users selected
         if(!empty($filtersArr['user']))
         {
             $querySessions .= " AND (";
@@ -218,6 +262,7 @@ class Session
             $querySessions .= ")";
         }
 
+		//Filters based on devices selected
         if(!empty($filtersArr['device']))
         {
             $querySessions .= " AND (";
@@ -238,6 +283,7 @@ class Session
             $querySessions .= ")";
         }
 
+		//Filter based on the groups selected
         if(!empty($filtersArr['group']))
         {
             $querySessions .= " AND (";

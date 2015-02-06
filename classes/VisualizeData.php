@@ -1,9 +1,21 @@
 <?php
 
+/**
+ * Class VisualizeData
+ * a helper abstract class used to assist in the generating of
+ * smart graphs and tables
+ */
 class VisualizeData
 {
 
 
+    /** Returns a pie chart using the highcarts.com library
+     * @param $graphData
+     * @param $sliceField
+     * @param $labelField
+     * @param $graphTitle
+     * @return string
+     */
     public static function GraphDataPie($graphData,$sliceField, $labelField, $graphTitle )
     {
         $graphSeriesData = array();
@@ -58,6 +70,15 @@ class VisualizeData
         return $graphString;
     }
 
+    /** Returns a graph time line using the highcharts.com libraries
+     * @param $graphData
+     * @param $timeField
+     * @param $yField
+     * @param $labelField
+     * @param $graphTitle
+     * @param $yLabel
+     * @return string
+     */
     public static function GraphTimeLine($graphData,$timeField, $yField,$labelField,$graphTitle, $yLabel)
     {
         $devicesSessionArr = array();
@@ -124,6 +145,15 @@ class VisualizeData
         return $graphString;
     }
 
+    /** returns a databale which is sortable, searchable and exportable using the datatables jquery module
+     * @param $tableData
+     * @param $tableHeaders
+     * @param $dataColumns
+     * @param $tableNameId
+     * @param $rowSelected
+     * @param bool $checkBoxes
+     * @return string
+     */
     public static function ListSessionsTable($tableData,$tableHeaders,$dataColumns,$tableNameId,$rowSelected,$checkBoxes=false)
     {
         $tableString =  " <script type=\"text/javascript\" class=\"init\">

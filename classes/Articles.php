@@ -1,6 +1,10 @@
 <?php
 
-
+/**
+ * Class Articles
+ * Class used to manage the news column of the page
+ * can load news articles, edit and delete
+ */
 class Articles
 {
     private $sqlDataBase;
