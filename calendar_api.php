@@ -35,8 +35,9 @@ if (isset($_POST['action']) && isset($_POST['user_id']) && isset($_POST['key']))
                     echo $reservation->JsonEventsRange($_POST['start'], $_POST['end'], $_POST ['user_id'], $_POST ['device_id']);
                     break;
                 case 'add_event':
+                    $training = (isset($_POST['training']))?1:0;
                     error_log("add switch statement: " . $POST_ARRAY, 0);
-                    $reservation->CreateReservation($_POST['device_id'], $_POST ['user_id'], $_POST ['start'], $_POST ['end'], $_POST['description'], 0);
+                    $reservation->CreateReservation($_POST['device_id'], $_POST ['user_id'], $_POST ['start'], $_POST ['end'], $_POST['description'], $training);
                     break;
                 case 'delete_event':
                     error_log("delete events: " . $POST_ARRAY, 0);
@@ -50,12 +51,34 @@ if (isset($_POST['action']) && isset($_POST['user_id']) && isset($_POST['key']))
                     $reservation->UpdateReservation();
                     break;
                 case 'update_event_info':
-                    error_log("update events info: " . $POST_ARRAY, 0);
+                    error_log("update and create events info: " . $POST_ARRAY, 0);
+                    $training = (isset($_POST['training']))?1:0;
+                    $repeat = (isset($_POST['repeat']))?(int)$_POST['repeat']:0;
+                    $interval = (isset($_POST['interval']))?(int)$_POST['interval']:0;
+                    $dateStart = new DateTime($_POST['start']);
+                    $dateEnd = new DateTime($_POST['end']);
                     if ($reservation->getReservationId() == 0) {
-                        $reservation->CreateReservation($_POST['device_id'], $_POST ['user_id'], $_POST ['start'], $_POST ['end'], $_POST['description'], 0);
+                        for($i=0; $i<=$repeat; $i++) {
+                            $reservation->CreateReservation($_POST['device_id'], $_POST ['user_id'], $dateStart->format('Y-m-d H:i:s'), $dateEnd->format('Y-m-d H:i:s'), $_POST['description'], $training);
+                            $dateStart->add(new DateInterval("P".($interval)."D"));
+                            $dateEnd->add(new DateInterval("P".($interval)."D"));
+                       }
                     }
-                    $reservation->setDescription($_POST['description']);
-                    $reservation->UpdateReservation();
+
+                    else {
+                        error_log("Update event info",0);
+                        for($i=1; $i<=$repeat; $i++)
+                        {
+                            $dateStart->add(new DateInterval("P".($interval)."D"));
+                            $dateEnd->add(new DateInterval("P".($interval)."D"));
+                            error_log("Date created" . $dateStart->format('Y-m-d H:i:s')." ".$dateEnd->format('Y-m-d H:i:s')." interval: ".$interval." repeat: ".$i, 0);
+                            $reservation->CreateReservation($_POST['device_id'], $_POST ['user_id'], $dateStart->format('Y-m-d H:i:s'), $dateEnd->format('Y-m-d H:i:s'), $_POST['description'], $training);
+                        }
+
+                        $reservation->setDescription($_POST['description']);
+                        $reservation->UpdateReservation();
+                    }
+
                     break;
             }
         }

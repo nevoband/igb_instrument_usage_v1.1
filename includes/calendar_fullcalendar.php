@@ -131,7 +131,6 @@ $(document).ready(function () {
             {
             ?>
                 $('#modifyReservationModal #trainingFormGroup').show();
-                $('#modifyReservationModal #reservationTraining').attr("disabled",false);
 
                 if (calEvent.training) {
 
@@ -263,6 +262,8 @@ $(document).ready(function () {
         var reservationStart = $('#reservationStart').val();
         var reservationEnd = $('#reservationEnd').val();
         var reservationTraining = $('#reservationTraining').val();
+        var reservationRepeatInterval = $('#reservationRepeatInterval').val();
+        var reservationRepeat =  $('#reservationRepeat').val();
 
         if (reservationId) {
 
@@ -278,7 +279,9 @@ $(document).ready(function () {
                     training: reservationTraining,
                     device_id: '<?php echo $device->GetDeviceId(); ?>',
                     user_id: '<?php echo $authenticate->getAuthenticatedUser()->GetUserId(); ?>',
-                    key: '<?php echo $authenticate->getAuthenticatedUser()->GetSecureKey(); ?>'
+                    key: '<?php echo $authenticate->getAuthenticatedUser()->GetSecureKey(); ?>',
+                    interval: reservationRepeatInterval,
+                    repeat: reservationRepeat
                 }
             });
             $('#calendar').fullCalendar('refetchEvents');
@@ -329,7 +332,7 @@ $(document).ready(function () {
                         <label class="col-sm-3 control-label" for="reservationTraining">Training</label>
 
                         <div class="col-sm-9">
-                            <input type="checkbox" value="" name="reservationTraining" id="reservationTraining" disabled>
+                            <input type="checkbox" value="" name="reservationTraining" id="reservationTraining">
                         </div>
                     </div>
 
@@ -345,12 +348,12 @@ $(document).ready(function () {
                                 ?>
                             </select>
                         </div>
-                        <div class="col-sm-2">
-                            <input type="radio" value="" name="reservationRepeatIteration" id="reservationRepeatDaily"> Daily
+                        <div class="col-sm-3">
+                            <select name="reservationRepeatInterval" id="reservationRepeatInterval" class="form-control">
+                                <option value="1">Daily</option>
+                                <option value="7">Weekly</option>
+                                </select>
                             </div>
-                        <div class="col-sm-2">
-                            <input type="radio" value="" name="reservationRepeatIteration" id="reservationRepeatDaily"> Weekly
-                        </div>
                         <div class="col-sm-3">
 
                         </div>
