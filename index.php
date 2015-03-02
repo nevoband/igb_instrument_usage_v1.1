@@ -8,13 +8,13 @@ include('includes/initializer.php');
 $authenticate->VerifySession();
 
 
-
 include('includes/header.php');
 
 //display navigation if user is verified
 if ($authenticate->isVerified()) {
     include('includes/navigation.php');
 }
+
 //Main page contents
 include('includes/contents.php');
 

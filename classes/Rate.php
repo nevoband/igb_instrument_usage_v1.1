@@ -44,6 +44,7 @@ class Rate
             $queryAddRateToDevice = "INSERT INTO device_rate (rate,device_id,rate_id,min_use_time,rate_type_id)VALUES(0,:device_id,:rate_id,0,:rate_type_id)";
             $addRateToDevice = $this->sqlDataBase->prepare($queryAddRateToDevice);
             $addRateToDevice->execute(array(':device_id'=>$rateDevice['id'],':rate_id'=>$this->rateId,':rate_type_id'=>$rateTypeId));
+            $this->rateId=$this->sqlDataBase->lastInsertId();
         }
 
         $this->rateName = $rateName;
