@@ -11,7 +11,7 @@
 
 //MySQL settings
 @define ('DB_USER','flowcyt_user');
-@define ('DB_PASSWORD','Dlr%8679');
+@define ('DB_PASSWORD','xxxxx');
 @define ('DB_HOST','localhost');
 @define ('DB_NAME','coreapp_flowcyt');
 
